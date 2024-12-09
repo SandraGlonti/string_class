@@ -1,0 +1,105 @@
+Łańcuchy - składają się z szeregu znaków Unicode np.:
+String java = "Java\u2122";
+System.out.println(java);
+Ten łańcuch składa się z charów oraz znaczka TM (trademark symbol)
+W Javie nie ma wbudowanego typu String. Zamiast tego biblioteka Javy zawiera predefiniowaną klasę o takiej właśnie nazwie.
+Obiekty klasy String są niemodyfikowalne (immutable), dlatego nie można w łańcuchach podmieniać znaków.
+Dany łańcuch zawsze będzie tym samym i niezmiennym szeregiem jednostek kodowych.
+Niemodyfikowalność łańcuchów ma jedną zaletę – kompilator może traktować łańcuchy jako współdzielone.
+
+String java = "java";
+java = "JAVA"; // dwa calkowicie rozne obiekty, nastąpiło utworzenie nowego obiektu
+
+- String Constant Pool – jest to pewien obszar przestrzeni znajdujący się na stercie (Heap),
+gdzie trafiają wszystkie łańcuchy tworzone w taki sposób:
+String word1 = "I love Java";
+String word2 = "I love Java";
+
+System.out.println("word1 == word2: " + (word1 == word2));
+
+Pomimo utworzenia dwóch zmiennych łańcuchowych i przypisania do każdej z nich łańcucha „I Love Java” to
+tak naprawdę istnieje tylko jeden taki obiekt w przestrzeni String Constant Pool i odwołują się do niego
+te dwie zmienne łańcuchowe. Mechanizm taki stworzono w celu optymalizacji pamięci.
+
+
+
+- Tworzenie Stringów, które nie znajdują się w przestrzeni SCP:
+String word3 = new String("I love Java");
+System.out.println("word2 == word3: " + (word2 == word3));
+
+- Metoda intern() zwraca stringa umieszczonego w SCP:
+  String word3Interned = new String("I love Java").intern();
+  System.out.println("word2 == word3Interned: " + (word2 == word3Interned));
+
+  String word1 = "Java"; // umieszczony w SCP, adres w pamieci to 0x512
+  String word3 = new String("Java") // nie jest umieszczony w SCP, adres w pamieci to 0x100
+  .intern(); // JVM patrzy czy string "Java" jest umieszczony w SCP, jezeli tak to zwraca (adres 0x512), natomiast jezeli go tam nie ma
+  to go tam umieszcza. czyli w w/w sytuacji obydwie zmiennej wskazuja na adres 0x512, a 0x100 jest kasowany.
+
+
+- Porównywanie łańcuchów
+Do porównywania strukturalnego służy metoda equals():
+System.out.println(word1.equals(word2));
+System.out.println( "I love Java".equals(word3));
+Można porównywać również stałą łańcuchową ze zmienną łańcuchową.
+System.out.println("JAVA".equalsIgnoreCase("java"));
+
+- Współdzielenie łańcuchów
+Współdzielone są tylko stałe łańcuchowe. Łańcuchy powstałe za pomocą metody concat() (konkatenacja)
+albo za pomocą metody substring() (wyciecie stringa) nie są współdzielone (ponieważ używa się tam new String()),
+dlatego nigdy nie używaj operatora == (porównania) do porównywania łańcuchów.
+String w1 = "Rumak";
+String w2 = "Rum";
+String w3 = w1.substring(0,3);
+System.out.println("w1: " + w1);
+System.out.println("w2: " + w2);
+System.out.println("w3: " + w3);
+
+System.out.println("w2 == w3: " + (w2 == w3));
+
+
+Łańcuchy puste i łańcuchy null
+
+Pusty łańcuch to łańcuch o zerowej długości.
+String empty = "";
+System.out.println(empty.length() == 0);
+System.out.println(empty.equals(""));
+
+Mimo wszystko jest obiektem zawierającym informację o swojej długości (0) i pustą treść.
+
+Zmienna typu String może zawierać specjalną wartość o nazwie null, oznaczającą, że aktualnie nie jest z nią powiązany żaden obiekt.
+String nullString = null;
+
+
+StringBuilder, StringBuffer
+Klasa StringBuilder została wprowadzona  w Javie 1.5. Jej poprzedniczka czyli StringBuffer jest nieznacznie mniej wydajna,
+ale pozwala na dodawanie lub usuwanie znaków przez wiele wątków (jest synchronizowana). Jeśli edycja łańcucha odbywa się
+w całości w jednym wątku (tak jest zazwyczaj), to należy używać StringBuildera. API obu tych klas są identyczne.
+
+
+Podsumowanie:
+•	W Javie nie ma wbudowanego typu String. Zamiast tego biblioteka Javy zawiera predefiniowaną klasę o takiej właśnie nazwie.
+•	Obiekty klasy String są niemodyfikowalne (immutable), dlatego nie można w łańcuchach podmieniać znaków.
+Dany łańcuch zawsze będzie tym samym i niezmiennym szeregiem jednostek kodowych. Niemodyfikowalność łańcuchów ma jedną zaletę
+– kompilator może traktować łańcuchy jako współdzielone.
+•	String Constant Pool – jest to pewien obszar przestrzeni znajdujący się na stercie (Heap), gdzie
+ trafiają wszystkie łańcuchy tworzone za pomocą przypisania stałej łańcuchowej do zmiennej łańcuchowej np.: String word = ‘’word’’;.
+•	Współdzielone są tylko stałe łańcuchowe. Łańcuchy powstałe za pomocą metody concat() (konkatenacja) albo za pomocą
+metody substring() nie są współdzielone (ponieważ używa się tam new String()), dlatego nigdy nie używaj operatora ==
+(porównania) do porównywania łańcuchów.
+•	Zmienna typu String może zawierać specjalną wartość o nazwie null, oznaczającą, że aktualnie nie jest z nią powiązany żaden obiekt.
+•	Klasa StringBuilder została wprowadzona  w Javie 1.5. jej poprzedniczka czyli StringBuffer jest nieznacznie mniej
+wydajna, ale pozwala na dodawanie lub usuwanie znaków przez wiele wątków (jest synchronizowana).
+Jeśli edycja łańcucha odbywa się w całości w jednym wątku (tak jest zazwyczaj), to należy używać StringBuildera.
+ API obu tych klas są identyczne. StringBuilder/Buffera nalezy uzywac w przypadku laczenia duzej ilosci obiektow/stringow
+ w jeden string, pozwala to na optymalizacje zuzycia pamieci i krotszy czas wykonywania.
+
+Praca domowa:
+Pobierz od użytkownika liczbę, która określać będzie ile wyrazów użytkownik chce wprowadzić.
+Następnie wczytaj od niego listę ciągów znaków na podstawie, których wygenerujesz wynik.
+Wynikiem jest wyraz składający się z ostatnich liter każdego z wprowadzonych słów. Wykorzystaj klasy String i StringBuilder.(dwa rozwiazania)
+
+Obejrzec:
+https://www.youtube.com/watch?v=mJD_zGajuJo
+
+
